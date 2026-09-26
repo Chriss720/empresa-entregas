@@ -1,4 +1,4 @@
-# Día 1 — Estudiar el caso web (sin código de dominio)
+# Entregable Día 1
 
 **Materia:** Tópicos Selectos de Tecnologías Web y Móvil  
 **Caso:** Plataforma / Empresa de Entregas  

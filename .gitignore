@@ -1,19 +1,19 @@
-# Python / Django
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Archivos de caché de Python
 __pycache__/
 *.py[cod]
 *$py.class
-*.sqlite3
-db.sqlite3
-*.log
-local_settings.py
-.env
-venv/
-env/
-ENV/
 
-# IDEs y SO
+# Base de datos local SQLite
+db.sqlite3
+*.sqlite3
+
+# Archivos de la IDE / Sistema Operativo
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
-Desktop.ini

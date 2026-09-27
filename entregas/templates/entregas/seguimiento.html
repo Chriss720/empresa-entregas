@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Seguimiento de Pedido — {{ folio }}</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 2rem; background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; padding: 2rem; border-radius: 12px; max-width: 550px; margin: 2rem auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        h1 { margin-top: 0; font-size: 1.5rem; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px dashed #f1f5f9; }
+        .label { font-weight: 600; color: #64748b; }
+        .val { font-weight: 600; color: #0f172a; }
+        .badge { background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; }
+        .btn-link { display: inline-block; margin-top: 1.5rem; color: #2563eb; text-decoration: none; font-weight: 600; }
+        .btn-link:hover { text-decoration: underline; }
+        .notice { font-size: 0.85rem; color: #475569; background: #f1f5f9; padding: 0.75rem; border-radius: 6px; margin-top: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚚 Tracking de Pedido</h1>
+        
+        <div class="row">
+            <span class="label">Folio de Rastreo:</span>
+            <span class="val">{{ folio }}</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Estado Actual:</span>
+            <span class="val badge">{{ estado }}</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Dirección de Destino:</span>
+            <span class="val">{{ direccion_destino }}</span>
+        </div>
+
+        <div class="row">
+            <span class="label">ETA Estimado:</span>
+            <span class="val" style="color: #2563eb;">{{ eta_estimado }}</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Fecha de Registro:</span>
+            <span class="val">{{ fecha_creacion|date:"d/m/Y H:i:s" }}</span>
+        </div>
+
+        <div class="notice">
+            ℹ️ <strong>Verificación PRG:</strong> Si presionas recargar (F5), se ejecuta un <code>GET /pedidos/{{ pedido.id }}</code>. No se duplica la orden ni el folio.
+        </div>
+
+        <a href="{% url 'crear_pedido' %}" class="btn-link">← Registrar otro pedido</a>
+    </div>
+</body>
+</html>

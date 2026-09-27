@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alta de Pedido — Empresa de Entregas</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 2rem; background-color: #f8fafc; color: #1e293b; }
+        .card { background: white; padding: 2rem; border-radius: 12px; max-width: 520px; margin: 2rem auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
+        h1 { margin-top: 0; font-size: 1.5rem; color: #0f172a; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input[type="text"] { width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; margin-bottom: 1.25rem; font-size: 0.95rem; }
+        button { background-color: #2563eb; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; }
+        button:hover { background-color: #1d4ed8; }
+        .info-tag { font-size: 0.8rem; background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.5rem; border-radius: 4px; display: inline-block; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>📦 Registrar Nuevo Pedido</h1>
+        <form action="{% url 'crear_pedido' %}" method="POST">
+            {% csrf_token %}
+            <label for="direccion">Dirección de Destino:</label>
+            <input type="text" id="direccion" name="direccion_destino" value="Av. Insurgentes Sur #1230, CDMX" required>
+            <button type="submit">Dar de alta pedido</button>
+        </form>
+    </div>
+</body>
+</html>

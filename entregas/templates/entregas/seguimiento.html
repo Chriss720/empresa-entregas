@@ -200,13 +200,17 @@
             ℹ️ <strong>Verificación Arquitectónica:</strong><br>
             • <strong>PRG:</strong> Recargar (F5) re-ejecuta el GET de consulta, sin duplicar pedidos.<br>
             • <strong>Cero SQL en plantilla:</strong> Todo dato visible proviene procesado desde el contexto.<br>
-            • <strong>Adapter + Strategy:</strong> La vista ignora el esquema ajeno (JSON con <code>route_hint</code> /
-            XML); la decisión de cálculo pertenece a la estrategia concreta instanciada por la Fábrica Simple.
+            • <strong>Adapter + Strategy:</strong> La vista ignora el esquema ajeno (JSON con <code>route_hint</code> / XML); el cálculo pertenece a la estrategia instanciada por la Fábrica Simple.<br>
+            • <strong>Clientes Web y Móvil (Inconveniente 5):</strong> Panel HTML y API móvil (<code>/api/pedidos/{{ pedido.id }}</code>) consumen el mismo servicio y modelo en un recurso de agregación que evita 12 peticiones a la app.<br>
+            • <strong>Sin Sobreingeniería (Inconveniente 7):</strong> La guía se emite directamente sin CQRS, Event Sourcing ni Redux.
         </div>
 
         <div class="actions">
             <a href="{% url 'crear_pedido' %}" class="btn-link">← Registrar otro pedido</a>
-            <a href="{% url 'pedido_json' pedido.id %}" target="_blank" class="btn-api">Ver Contrato JSON (Móvil) →</a>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <a href="{% url 'descargar_guia' pedido.id %}" class="btn-api" style="background: #0284c7;">Descargar Guía (TXT/PDF) ↓</a>
+                <a href="{% url 'api_pedido_json' pedido.id %}" target="_blank" class="btn-api">Ver Contrato JSON (Móvil) →</a>
+            </div>
         </div>
     </div>
 </body>

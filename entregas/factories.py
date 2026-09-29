@@ -37,3 +37,12 @@ class FabricaMediosEntrega:
         clave = (medio or "").strip().lower()
         clase_estrategia = cls._MEDIOS.get(clave, EntregaCamioneta)
         return clase_estrategia()
+
+    @classmethod
+    def registrar(cls, nombre: str, clase_estrategia: Type[MedioDeEntrega]):
+        """
+        Registra una nueva estrategia de transporte (principio Abierto/Cerrado).
+        Permite añadir nuevos medios (ej. triciclo) sin modificar el código interno de la fábrica.
+        """
+        cls._MEDIOS[nombre.strip().lower()] = clase_estrategia
+

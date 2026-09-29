@@ -158,3 +158,103 @@ class Dia3PatronesTestCase(TestCase):
         self.assertEqual(data['estado'], 'REGISTRADO')
         self.assertIn('10 a 15 minutos', data['eta_estimado'])
         self.assertIn('detalles_plan', data)
+
+
+class Dia5ContratoMovilYDefensaTestCase(TestCase):
+    """
+    Pruebas unitarias para los objetivos del Día 5:
+    1. El mismo folio servido en HTML (panel) y en JSON (GET /api/pedidos/<id>).
+    2. Contrato mínimo JSON (folio, estado, eta) y recurso de agregación que evita 12 peticiones.
+    3. Descarga directa de guía de envío (rechazo justificado a Event Sourcing y CQRS).
+    4. Ensayo de extensibilidad del Triciclo sin reabrir la vista, el XML ni el trámite registrar.
+    """
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_mismo_folio_en_panel_html_y_api_json(self):
+        """El mismo folio se consulta como HTML en el panel y como JSON en la API móvil"""
+        pedido = PedidoService.registrar_pedido("Av. Cuauhtémoc #50", "urgente")
+
+        # 1. Consulta en Panel Web (HTML)
+        url_html = reverse('detalle_pedido', args=[pedido.id])
+        resp_html = self.client.get(url_html)
+        self.assertEqual(resp_html.status_code, 200)
+        self.assertContains(resp_html, pedido.folio)
+        self.assertContains(resp_html, "Dron")
+
+        # 2. Consulta en API Móvil (JSON vía /api/pedidos/<id>)
+        url_api = reverse('api_pedido_json', args=[pedido.id])
+        resp_api = self.client.get(url_api)
+        self.assertEqual(resp_api.status_code, 200)
+        self.assertEqual(resp_api['Content-Type'], 'application/json')
+        data = resp_api.json()
+        self.assertEqual(data['folio'], pedido.folio)
+        self.assertEqual(data['estado'], pedido.estado)
+        self.assertEqual(data['eta'], pedido.eta_estimado)
+
+    def test_api_pedidos_json_minimo_y_recurso_agregacion(self):
+        """GET /api/pedidos/<id> entrega el JSON mínimo y consolida datos para evitar 12 peticiones"""
+        pedido = PedidoService.registrar_pedido("Calle Puebla #80", "estandar")
+        url_api = reverse('api_pedido_json', args=[pedido.id])
+        response = self.client.get(url_api)
+
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+
+        # Contrato mínimo explícito del Día 5:
+        self.assertIn("folio", data)
+        self.assertIn("estado", data)
+        self.assertIn("eta", data)
+        self.assertEqual(data["folio"], pedido.folio)
+        self.assertEqual(data["estado"], "REGISTRADO")
+        self.assertEqual(data["eta"], pedido.eta_estimado)
+
+        # Campos consolidados en una sola llamada (evitan que la app móvil haga 12 requests):
+        self.assertIn("medio_transporte", data)
+        self.assertIn("motivo_asignacion", data)
+        self.assertIn("detalles_plan", data)
+        self.assertIn("direccion_destino", data)
+        self.assertIn("fecha_creacion", data)
+
+    def test_descargar_guia_directa_sin_event_sourcing(self):
+        """Demuestra que generar una guía no requiere Event Sourcing, CQRS ni Redux (KISS/YAGNI)"""
+        pedido = PedidoService.registrar_pedido("Calle Hidalgo #100", "urgente")
+        url_guia = reverse('descargar_guia', args=[pedido.id])
+        response = self.client.get(url_guia)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=utf-8')
+        self.assertIn(f'attachment; filename="guia_{pedido.folio}.txt"', response['Content-Disposition'])
+        contenido = response.content.decode('utf-8')
+        self.assertIn(pedido.folio, contenido)
+        self.assertIn("GUIA DE ENVIO", contenido)
+        self.assertIn(pedido.medio_transporte, contenido)
+
+    def test_ensayo_triciclo_extensibilidad_sin_tocar_tramite(self):
+        """
+        Defensa del Día 5:
+        'Si mañana hay triciclo, ¿cuántos archivos abrimos?'
+        Demuestra que añadiendo la clase de estrategia y registrándola en la fábrica,
+        el trámite registrar_pedido y las vistas siguen intactos sin abrirse.
+        """
+        class EntregaTriciclo(MedioDeEntrega):
+            def planear(self, contexto=None):
+                return PlanEntrega(
+                    medio="Triciclo",
+                    tiempo_estimado="25 a 35 minutos",
+                    costo=30.0,
+                    instrucciones_ruta="Ciclovías segundarias y andadores peatonales.",
+                    detalles="Reparto sustentable de carga ligera en triciclo."
+                )
+
+        # 1. Se registra la nueva estrategia en la fábrica (Open/Closed Principle)
+        FabricaMediosEntrega.registrar("triciclo", EntregaTriciclo)
+
+        # 2. La fábrica crea el triciclo
+        medio = FabricaMediosEntrega.crear("triciclo")
+        self.assertIsInstance(medio, EntregaTriciclo)
+        plan = medio.planear()
+        self.assertEqual(plan.medio, "Triciclo")
+        self.assertIn("25 a 35 minutos", plan.tiempo_estimado)
+

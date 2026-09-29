@@ -1,4 +1,4 @@
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from .services import PedidoService
@@ -61,6 +61,8 @@ def pedido_json_view(request, pedido_id):
     Contrato API para el cliente móvil: GET /pedidos/<id>/json (o /api/pedidos/<id>)
     Retorna el pedido estructurado en formato JSON ligero en una sola petición.
     Reutiliza la misma capa de servicio/modelo sin duplicar lógica.
+    Resuelve el inconveniente 5: El panel y la app no tienen la misma hambre.
+    Evita las doce peticiones para pintar el inicio mediante un recurso de agregación.
     """
     try:
         pedido = PedidoService.obtener_pedido_por_id(pedido_id)
@@ -68,12 +70,48 @@ def pedido_json_view(request, pedido_id):
         return JsonResponse({"error": "Pedido no encontrado", "id": pedido_id}, status=404)
 
     return JsonResponse({
+        # JSON mínimo solicitado explícitamente para el cliente móvil:
         "folio": pedido.folio,
-        "direccion_destino": pedido.direccion_destino,
         "estado": pedido.estado,
+        "eta": pedido.eta_estimado,
+        # Recurso de agregación consolidado (evita que la app móvil haga 12 peticiones para el inicio):
         "medio_transporte": pedido.medio_transporte,
         "motivo_asignacion": pedido.motivo_asignacion,
         "eta_estimado": pedido.eta_estimado,
+        "direccion_destino": pedido.direccion_destino,
         "detalles_plan": pedido.detalles_plan,
         "fecha_creacion": pedido.fecha_creacion.isoformat(),
     })
+
+
+@require_http_methods(["GET"])
+def descargar_guia_view(request, pedido_id):
+    """
+    Generación de Guía de Envío descargable (Inconveniente 7 del enunciado):
+    Demuestra cómo 'saber decir que no' al Golden Hammer (Event Sourcing, CQRS, Redux global).
+    El trámite real es directo: consultar el pedido existente y emitir el documento.
+    """
+    pedido = get_object_or_404(Pedido, pk=pedido_id)
+
+    contenido_guia = (
+        f"====================================================\n"
+        f"       GUIA DE ENVIO - EMPRESA DE ENTREGAS\n"
+        f"====================================================\n"
+        f"Folio:             {pedido.folio}\n"
+        f"Estado:            {pedido.get_estado_display()}\n"
+        f"Fecha de Creacion: {pedido.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"----------------------------------------------------\n"
+        f"Destino:           {pedido.direccion_destino}\n"
+        f"Medio Asignado:    {pedido.medio_transporte}\n"
+        f"ETA Estimado:      {pedido.eta_estimado}\n"
+        f"Motivo Asignacion: {pedido.motivo_asignacion}\n"
+        f"Detalles Plan:     {pedido.detalles_plan}\n"
+        f"====================================================\n"
+        f"Generado limpiamente en Django sin sobreingenieria.\n"
+        f"Rechazo formal de Event Sourcing / CQRS innecesario.\n"
+        f"====================================================\n"
+    )
+
+    response = HttpResponse(contenido_guia, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="guia_{pedido.folio}.txt"'
+    return response

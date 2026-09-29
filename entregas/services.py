@@ -31,7 +31,7 @@ class PedidoService:
         with transaction.atomic():
             # Simulación de cobro seguro dentro de la transacción
             # Si esto fallara (ej. ValueError), la transacción haría rollback automático.
-            print(f"💰 [Transacción] Realizando cobro simulado para paquete '{tipo_paquete}'...")
+            print(f"[Transaccion] Realizando cobro simulado para paquete '{tipo_paquete}'...")
 
             # Paso 1: Adapter (Homologación del proveedor externo a dominio)
             adaptador: AsesorLogisticoAdapter = obtener_adaptador_ia(proveedor_ia)
@@ -45,7 +45,7 @@ class PedidoService:
                 sugerencia: Sugerencia = adaptador.obtener_sugerencia(contexto_ia)
             except TimeoutError:
                 # Degradación elegante: La IA se cayó, pero el sistema no debe fallar.
-                print("⚠️ [Fallo Externo] La IA no respondió (Timeout). Asignando fallback seguro...")
+                print("[Fallo Externo] La IA no respondio (Timeout). Asignando fallback seguro...")
                 sugerencia = Sugerencia(
                     medio="camioneta",
                     motivo="IA no disponible (Fallo de conexión). Asignación por defecto en modo Offline."
@@ -78,7 +78,7 @@ class PedidoService:
             # El aviso (correo) va DESPUÉS de que la transacción confirmó. 
             # Si el aviso falla, el pedido SÍ quedó persistido. Observer no sustituye la transacción.
             transaction.on_commit(
-                lambda: print(f"✅ [Aviso/Correo] El pedido {pedido.folio} ha sido confirmado con éxito. Notificando al cliente.")
+                lambda: print(f"[Aviso/Correo] El pedido {pedido.folio} ha sido confirmado con exito. Notificando al cliente.")
             )
 
             return pedido

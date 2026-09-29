@@ -1,31 +1,151 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguimiento de Pedido — {{ folio }}</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; margin: 2rem; background-color: #f8fafc; color: #1e293b; }
-        .card { background: white; padding: 2rem; border-radius: 12px; max-width: 600px; margin: 2rem auto; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; }
-        h1 { margin-top: 0; font-size: 1.5rem; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 0.75rem; padding: 0.5rem 0; border-bottom: 1px dashed #f1f5f9; align-items: baseline; }
-        .label { font-weight: 600; color: #64748b; font-size: 0.9rem; }
-        .val { font-weight: 600; color: #0f172a; font-size: 0.95rem; text-align: right; max-width: 65%; }
-        .badge { background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; }
-        .badge-medio { background: #e0e7ff; color: #3730a3; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.85rem; }
-        .btn-link { display: inline-block; margin-top: 1.5rem; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
-        .btn-link:hover { text-decoration: underline; }
-        .actions { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; margin-top: 1.5rem; padding-top: 1rem; }
-        .btn-api { background: #0f172a; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 500; }
-        .btn-api:hover { background: #334155; }
-        .notice { font-size: 0.82rem; color: #475569; background: #f1f5f9; padding: 0.75rem; border-radius: 6px; margin-top: 1.25rem; line-height: 1.4; }
-        .box-plan { background: #f8fafc; border-left: 4px solid #3b82f6; padding: 0.75rem; border-radius: 0 6px 6px 0; margin-top: 0.5rem; font-size: 0.88rem; color: #334155; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 2rem;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 2rem auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.75rem;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #f1f5f9;
+            align-items: baseline;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .val {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.95rem;
+            text-align: right;
+            max-width: 65%;
+        }
+
+        .badge {
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+        }
+
+        .badge-medio {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+        }
+
+        .btn-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+        }
+
+        .btn-api {
+            background: #0f172a;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-api:hover {
+            background: #334155;
+        }
+
+        .notice {
+            font-size: 0.82rem;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 1.25rem;
+            line-height: 1.4;
+        }
+
+        .box-plan {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 0.75rem;
+            border-radius: 0 6px 6px 0;
+            margin-top: 0.5rem;
+            font-size: 0.88rem;
+            color: #334155;
+        }
+
+        .map-box {
+            background: #e2e8f0;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 1px dashed #94a3b8;
+        }
     </style>
 </head>
+
 <body>
     <div class="card">
         <h1>🚚 Tracking de Pedido</h1>
-        
+
         <div class="row">
             <span class="label">Folio de Rastreo:</span>
             <span class="val">{{ folio }}</span>
@@ -62,6 +182,10 @@
             <span class="val" style="font-size: 0.85rem; color: #475569;">{{ motivo_asignacion }}</span>
         </div>
 
+        <div class="map-box">
+            🗺️ [Mapa Simulado] Ruta renderizada para {{ direccion_destino }}
+        </div>
+
         <div style="margin-top: 0.75rem;">
             <span class="label">Detalles Operativos del Plan:</span>
             <div class="box-plan">{{ detalles_plan }}</div>
@@ -76,7 +200,8 @@
             ℹ️ <strong>Verificación Arquitectónica:</strong><br>
             • <strong>PRG:</strong> Recargar (F5) re-ejecuta el GET de consulta, sin duplicar pedidos.<br>
             • <strong>Cero SQL en plantilla:</strong> Todo dato visible proviene procesado desde el contexto.<br>
-            • <strong>Adapter + Strategy:</strong> La vista ignora el esquema ajeno (JSON con <code>route_hint</code> / XML); la decisión de cálculo pertenece a la estrategia concreta instanciada por la Fábrica Simple.
+            • <strong>Adapter + Strategy:</strong> La vista ignora el esquema ajeno (JSON con <code>route_hint</code> /
+            XML); la decisión de cálculo pertenece a la estrategia concreta instanciada por la Fábrica Simple.
         </div>
 
         <div class="actions">
@@ -85,4 +210,5 @@
         </div>
     </div>
 </body>
+
 </html>

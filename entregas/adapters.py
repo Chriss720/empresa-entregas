@@ -164,6 +164,15 @@ class XmlIAAdapter(AsesorLogisticoAdapter):
         )
 
 
+class TimeoutIAAdapter(AsesorLogisticoAdapter):
+    """
+    Simulador para el Día 4: Un proveedor externo que sufre una caída,
+    provocando un TimeoutError para validar la resiliencia del sistema.
+    """
+    def obtener_sugerencia(self, contexto: dict) -> Sugerencia:
+        raise TimeoutError("El proveedor de IA no respondió en el tiempo establecido.")
+
+
 def obtener_adaptador_ia(proveedor: str = "json") -> AsesorLogisticoAdapter:
     """
     Función de utilidad para resolver la instancia del adaptador solicitado.
@@ -172,4 +181,7 @@ def obtener_adaptador_ia(proveedor: str = "json") -> AsesorLogisticoAdapter:
     proveedor_limpio = (proveedor or "").strip().lower()
     if proveedor_limpio == "xml":
         return XmlIAAdapter()
+    elif proveedor_limpio == "timeout":
+        return TimeoutIAAdapter()
     return JsonIAAdapter()
+
